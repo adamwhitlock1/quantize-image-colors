@@ -7,7 +7,7 @@ const DEFAULT_SETTINGS = {
   colors: 3,
   cors: true,
   windowSize: 50,
-  format: FORMATS.rgb
+  format: FORMATS.rgb,
 };
 
 export default function useImageColor(src, _settings = {}) {
@@ -46,36 +46,38 @@ export default function useImageColor(src, _settings = {}) {
     throw new Error("Invalid output format");
   }
 
-  useEffect(() => {
-    const canvas = document.createElement("canvas");
-    const img = document.createElement("img");
+  const deriveColors = (src) => {
+    return new Promise((resolve) => {
+      const img = new Image();
 
-    const context = canvas.getContext("2d");
+      if (settings.cors) {
+        img.setAttribute("crossOrigin", "");
+      }
 
-    if (settings.cors) {
-      img.setAttribute("crossOrigin", "");
-    }
+      img.addEventListener("load", () => {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        context.drawImage(img, 0, 0);
+        const { data } = context.getImageData(
+          0,
+          0,
+          img.naturalWidth,
+          img.naturalHeight
+        );
+        const colorMap = quantize(chunk(data, CHANNELS), settings.colors);
 
-    img.onload = () => {
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      context.drawImage(img, 0, 0);
-      const { data } = context.getImageData(
-        0,
-        0,
-        img.naturalWidth,
-        img.naturalHeight
-      );
-      const colorMap = quantize(chunk(data, CHANNELS), settings.colors);
+        const pallete = colorMap.palette();
 
-      const pallete = colorMap.palette();
-      setColors(
-        settings.format === FORMATS.rgb ? pallete : pallete.map(mapToHex)
-      );
-    };
+        resolve(
+          settings.format === FORMATS.rgb ? pallete : pallete.map(mapToHex)
+        );
+      });
 
-    img.src = src;
-  }, [src, settings.cors, settings.colors, settings.format, chunk, mapToHex]);
+      img.src = src;
+    });
+  };
 
-  return { colors };
+  return deriveColors;
 }

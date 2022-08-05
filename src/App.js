@@ -1,48 +1,28 @@
 import "./styles.css";
-import useImageColor from "./useImageColor";
 import { buildRgb } from "./buildRgb";
 import CardGuts from "./CardGuts";
+import { useState, useEffect } from "react";
 
-const fake_data = [
-  {
-    id: 1,
-    dj: "Alphazap",
-    label: "SLK-Class",
-    dj_crew: "Cereopsis goose",
-    gender: "Genderqueer",
-    mix_name: "Mercedes-Benz",
-    mix_photo: "https://random.imagecdn.app/800/800"
-  },
-  {
-    id: 2,
-    dj: "It",
-    label: "STS",
-    dj_crew: "Stork, yellow-billed",
-    gender: "Male",
-    mix_name: "Cadillac",
-    mix_photo: "https://random.imagecdn.app/500/800"
-  },
-  {
-    id: 3,
-    dj: "Daltfresh",
-    label: "Camry",
-    dj_crew: "Red-winged hawk (unidentified)",
-    gender: "Male",
-    mix_name: "Toyota",
-    mix_photo: "https://random.imagecdn.app/600/800"
-  }
-];
+const getImageList = async () => {
+  const response = await fetch("https://picsum.photos/v2/list?page=1&limit=30");
+  console.log({ response });
+  console.log(response.json);
+  return response.json();
+};
 
 export default function App() {
-  const { colors } = useImageColor("https://random.imagecdn.app/600/800");
+  const [apiData, setApiData] = useState(null);
 
-  const renderList = fake_data.map((mix) => (
-    <CardGuts key={mix.id} mix={mix} colors={colors} />
+  useEffect(() => {
+    console.log("HIT API FOR IMAGE LIST");
+    const getSeedData = async () => {
+      const data = await getImageList();
+      setApiData(data);
+    };
+    getSeedData();
+  }, []);
+  const renderList = apiData?.map((item) => (
+    <CardGuts key={item.id} mix={item} />
   ));
-  return (
-    <div className="App">
-      <p>Mock Data: ${JSON.stringify()}</p>
-      {renderList}
-    </div>
-  );
+  return <div className="App">{renderList}</div>;
 }
