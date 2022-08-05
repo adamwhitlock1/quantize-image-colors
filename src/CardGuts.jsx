@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { tw } from "twind";
 import { buildRgb } from "./buildRgb";
 import useImageColor from "./useImageColor";
+import { Link } from "react-router-dom";
 
 function CardGuts({ key, mix }) {
   const [mainColor, setMainColor] = useState("");
@@ -17,7 +18,6 @@ function CardGuts({ key, mix }) {
   useEffect(() => {
     const getColors = async () => {
       const colors = await deriveColors(imageSrcUrl);
-      console.log({ colors });
       setColors(colors);
     };
 
@@ -38,11 +38,11 @@ function CardGuts({ key, mix }) {
   return (
     <>
       <div
-        className={tw`glass max-w-sm rounded overflow-hidden shadow-lg block relative w-800, h-800 hover:box-content card-title`}
+        className={tw`glass max-w-sm rounded overflow-hidden shadow-lg block relative w-800, h-800 hover:box-content card-title mb-4`}
       >
         <img className={tw`w-full`} src={imageSrcUrl} alt={mix.author}></img>
         <div
-          className={tw`font-bold text-s mb-2 p-2 rounded absolute bg-white top-[0] left-[0]`}
+          className={tw`font-bold text-s mb-2 p-2 rounded absolute bg-white top-[0] left-[0] mt-2 ml-2`}
         >
           <div style={{ backgroundColor: buildRgb(mainColor) }}>
             <p>{buildRgb(mainColor)}</p>
@@ -54,6 +54,13 @@ function CardGuts({ key, mix }) {
             <p>{buildRgb(accentColor)}</p>
           </div>
         </div>
+        <Link
+          to={`/details/${mix.id}`}
+          className={tw`text-underline`}
+          state={{ colors: { mainColor, secondaryColor, accentColor } }}
+        >
+          VIEW DETAILS ->{" "}
+        </Link>
       </div>
     </>
   );
