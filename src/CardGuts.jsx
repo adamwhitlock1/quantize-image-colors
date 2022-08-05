@@ -35,12 +35,6 @@ function CardGuts({ key, mix }) {
     }
   }, [colors, mainColor]);
 
-  const backgroundColor = {
-    backgroundColor: buildRgb(mainColor),
-  };
-
-  const nuColor = buildRgb(mainColor);
-
   return (
     <>
       <div
@@ -50,8 +44,14 @@ function CardGuts({ key, mix }) {
         <div
           className={tw`font-bold text-s mb-2 p-2 rounded absolute bg-white top-[0] left-[0]`}
         >
-          <div key={`h${mix.id}`} style={backgroundColor}>
-            <p>{nuColor}</p>
+          <div style={{ backgroundColor: buildRgb(mainColor) }}>
+            <p>{buildRgb(mainColor)}</p>
+          </div>
+          <div style={{ backgroundColor: buildRgb(secondaryColor) }}>
+            <p>{buildRgb(mainColor)}</p>
+          </div>
+          <div style={{ backgroundColor: buildRgb(accentColor) }}>
+            <p>{buildRgb(accentColor)}</p>
           </div>
         </div>
       </div>
